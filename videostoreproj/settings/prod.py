@@ -1,7 +1,13 @@
 from .base import *
 
-DEBUG = True
+DEBUG = False
 
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
+# In production you need to run
+# ./manage collectstatic to gather all static files
+# in STATIC_ROOT
+STATIC_ROOT = '/demo/static/'
 
 LOGGING = {
     'version': 1,
