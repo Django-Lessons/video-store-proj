@@ -1,3 +1,10 @@
+.videos .card-body a.btn {
+  border-radius: 0; }
+
+.videos .card-title a {
+  color: purple;
+  text-decoration: underline; }
+
 /*!
  * Bootstrap v4.4.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
