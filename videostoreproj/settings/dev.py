@@ -2,6 +2,8 @@ from .base import *
 
 DEBUG = True
 
+MEDIA_ROOT = '/demo/media'
+
 
 LOGGING = {
     'version': 1,

@@ -1,3 +1,9 @@
 from django.contrib import admin
+from land.models import Video
 
-# Register your models here.
+
+class AdminVideo(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Video, AdminVideo)
