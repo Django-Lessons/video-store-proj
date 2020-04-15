@@ -6,7 +6,7 @@ from land import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('video', views.video, name='video'),
+    path('video/<int:id>/', views.video, name='video'),
     path('about', views.about, name='about'),
     path('contact', views.contact, name='contact'),
 ]

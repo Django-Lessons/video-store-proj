@@ -1,0 +1,20 @@
+{% extends 'land/base.html' %}
+
+{% block central_content %}
+    <div>
+      <a class="my-4" href="{% url 'index' %}" class="btn btn-success">Go Back</a>
+    </div>
+    <div class="my-4">
+      <h1>{{video.title}}</h1>
+
+      <div class="card m-2" style="width: 18rem;">
+        <img class="card-img-top" src="/media/{{video.thumbnail}}" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">{{video.title}}</h5>
+          <p class="card-text">{{video.description}}</p>
+          <a href="#" class="btn btn-outline-success">Watch</a>
+        </div>
+      </div>
+
+    </div>
+{% endblock central_content %}

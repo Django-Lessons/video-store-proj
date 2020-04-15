@@ -12,11 +12,11 @@ def index(request):
 
 
 def video(request, id):
-    video = Video.find(id=id)
+    video = Video.objects.filter(id=id).first()
 
     return render(
         request,
-        'land/index.html',
+        'land/video.html',
         {'video': video}
     )
 
