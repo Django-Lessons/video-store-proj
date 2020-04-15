@@ -3,6 +3,19 @@
 {% block central_content %}
     <div class="my-4">
       <h1>Welcome to Video Store!</h1>
-      <p class="lead">Here you upload and manage your videos.</p>
+        <div class="videos d-flex">
+          {% for video in videos %}
+                <div class="card m-2" style="width: 18rem;">
+                  <img class="card-img-top" src="/media/{{video.thumbnail}}" alt="Card image cap">
+                  <div class="card-body">
+                    <h5 class="card-title">{{video.title}}</h5>
+                    <a href="{% url 'land:video' %}"><p class="card-text">{{video.description}}</p></a>
+                    <a href="#" class="btn btn-outline-success">Watch</a>
+                  </div>
+                </div>
+          {% empty %}
+            No videos in store!
+          {% endfor %}
+      </div>
     </div>
 {% endblock central_content %}
