@@ -9,6 +9,8 @@ urlpatterns = [
     path('video/<int:id>/', views.video, name='video'),
     path('about', views.about, name='about'),
     path('contact', views.contact, name='contact'),
+    path('login', views.login, name='login'),
+    path('register', views.register, name='register'),
 ]
 
 if settings.DEBUG:
