@@ -13,6 +13,6 @@ class RequestLogger:
 
         response = self.get_response(request)
 
-        logger.info(f"method={request.method} path={request.path}")
+        # logger.info(f"method={request.method} path={request.path}")
 
         return response

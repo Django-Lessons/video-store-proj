@@ -11,6 +11,20 @@ def index(request):
     )
 
 
+def login(request):
+    return render(
+        request,
+        'land/login.html'
+    )
+
+
+def register(request):
+    return render(
+        request,
+        'land/register.html'
+    )
+
+
 def video(request, id):
     video = Video.objects.filter(id=id).first()
 
