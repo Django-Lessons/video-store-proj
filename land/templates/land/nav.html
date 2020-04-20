@@ -32,10 +32,13 @@
        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
      </form>
-     <ul class="navbar-nav">
+     <ul class="navbar-nav d-flex align-items-center">
       {% if request.user.is_authenticated %}
         <li class="nav-item">
-          Welcome, {{ request.user.username }}!
+          <span class="text-white mx-2">Welcome, {{ request.user.username }}!</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
         </li>
       {% else %}
         <li class="nav-item {% activate_on 'login' %}">

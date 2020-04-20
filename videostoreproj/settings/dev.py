@@ -14,7 +14,7 @@ LOGGING = {
         }
     },
     'loggers': {
-        'land.views': {
+        'django': {
             'handlers': ['xyz_console'],
             'level': 'DEBUG'
         }

@@ -1,6 +1,5 @@
 import logging
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as auth_login
+from django.shortcuts import render
 from land.models import Video
 
 
@@ -13,25 +12,6 @@ def index(request):
         request,
         'land/index.html',
         {'videos': videos}
-    )
-
-
-def login(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user:
-            logger.debug("Authentication successful")
-            auth_login(request, user)
-            return redirect('index')
-        else:
-            logger.debug("Authentication failed")
-            pass
-
-    return render(
-        request,
-        'land/login.html'
     )
 
 
