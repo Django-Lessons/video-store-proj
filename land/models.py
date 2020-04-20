@@ -3,7 +3,9 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    pass
+
+    def is_pro_user(self):
+        return False
 
 
 class Video(models.Model):

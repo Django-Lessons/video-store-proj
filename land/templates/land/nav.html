@@ -34,11 +34,20 @@
      </form>
      <ul class="navbar-nav d-flex align-items-center">
       {% if request.user.is_authenticated %}
-        <li class="nav-item">
-          <span class="text-white mx-2">Welcome, {{ request.user.username }}!</span>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+        <li class="nav-item dropdown userline">
+          <a class="nav-link dropdown-toggle" href="#" id="usermenu-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="text-white">{{ request.user.username }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="usermenu-dropdown">
+            {% if user.is_pro_user %}
+              <a class="dropdown-item" href="#">PRO Account</a>
+            {% else %}
+              <a class="dropdown-item" href="#"><del>Upgrade to PRO</del></a>
+            {% endif %}
+            <a class="dropdown-item" href="#">Profile</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+          </div>
         </li>
       {% else %}
         <li class="nav-item {% activate_on 'login' %}">
