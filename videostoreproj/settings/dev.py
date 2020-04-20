@@ -14,9 +14,9 @@ LOGGING = {
         }
     },
     'loggers': {
-        'land.middleware': {
+        'land.views': {
             'handlers': ['xyz_console'],
-            'level': 'INFO'
+            'level': 'DEBUG'
         }
     }
 }
