@@ -131,6 +131,18 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 
 /***/ }),
 
+/***/ "./src/js/duo_pass.js":
+/*!****************************!*\
+  !*** ./src/js/duo_pass.js ***!
+  \****************************/
+/*! exports provided: DuoPass */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"DuoPass\", function() { return DuoPass; });\n/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\");\n/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);\n\n\nclass Password {\n  constructor(pwd, keyup_handler, duo_context) {\n    this._pwd = pwd;\n\n    this._pwd.on('keyup', function () {\n      keyup_handler.apply(duo_context);\n    });\n  }\n\n  get text() {\n    // _pwd is instance of jquery e.g.\n    // jquery(\"#password1\")\n    return this._pwd.val();\n  }\n\n  mark(color) {\n    this._pwd.css('color', color);\n  }\n\n}\n\nclass DuoPass {\n  static get RED() {\n    return \"red\";\n  }\n\n  static get GREEN() {\n    return \"green\";\n  }\n\n  constructor() {\n    this._pass1 = new Password(jquery__WEBPACK_IMPORTED_MODULE_0___default()(\"#password1\"), this.keyup, this);\n    this._pass2 = new Password(jquery__WEBPACK_IMPORTED_MODULE_0___default()(\"#password2\"), this.keyup, this);\n  }\n\n  keyup() {\n    let text1, text2;\n    text1 = this._pass1.text;\n    text2 = this._pass2.text;\n\n    if (text1 != text2) {\n      // mark red\n      this.mark(DuoPass.RED);\n    } else {\n      // mark green\n      this.mark(DuoPass.GREEN);\n    }\n  }\n\n  mark(color) {\n    console.log(`mark with color=${color}`);\n    [this._pass1, this._pass2].forEach(p => p.mark(color));\n  }\n\n}\n\n//# sourceURL=webpack:///./src/js/duo_pass.js?");
+
+/***/ }),
+
 /***/ "./src/js/index.js":
 /*!*************************!*\
   !*** ./src/js/index.js ***!
@@ -139,18 +151,7 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sass_index_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sass/index.scss */ \"./src/sass/index.scss\");\n/* harmony import */ var _sass_index_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_sass_index_scss__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap */ \"./node_modules/bootstrap/dist/js/bootstrap.js\");\n/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_1__);\n\n\n\n//# sourceURL=webpack:///./src/js/index.js?");
-
-/***/ }),
-
-/***/ "./src/sass/index.scss":
-/*!*****************************!*\
-  !*** ./src/sass/index.scss ***!
-  \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./src/sass/index.scss?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\");\n/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap */ \"./node_modules/bootstrap/dist/js/bootstrap.js\");\n/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _duo_pass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./duo_pass */ \"./src/js/duo_pass.js\");\n\n\n\njquery__WEBPACK_IMPORTED_MODULE_0___default()(function () {\n  let duo_pass = new _duo_pass__WEBPACK_IMPORTED_MODULE_2__[\"DuoPass\"]();\n});\n\n//# sourceURL=webpack:///./src/js/index.js?");
 
 /***/ })
 
