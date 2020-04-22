@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from django.test import TestCase
 from land.models import User
 
@@ -17,7 +17,7 @@ class PaymentUnitTest(TestCase):
             "Initial user should have empty paid_until attr"
         )
 
-    def test_diffrent_date_values(self):
+    def test_different_date_values(self):
         current_date = date(2020, 1, 4)  # 1st of April 2020
         _30days = timedelta(days=30)
 
@@ -36,3 +36,20 @@ class PaymentUnitTest(TestCase):
                 current_date=current_date
             )
         )
+
+    def test_different_input_types(self):
+        current_date = datetime(2020, 4, 1)
+        _30days = timedelta(days=30)
+
+        ts_in_future = datetime.timestamp(current_date + _30days)
+
+        self.user.set_paid_until(
+            int(ts_in_future)
+        )
+
+        self.user.set_paid_until(
+            '1212344545'
+        )
+
+
+
