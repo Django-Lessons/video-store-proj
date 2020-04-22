@@ -9,6 +9,10 @@ class User(AbstractUser):
         blank=True
     )
 
+    def set_paid_until(self, paid_until):
+        self.paid_until = paid_until
+        self.save()
+
     def has_paid(
         self,
         current_date=datetime.date.today()
