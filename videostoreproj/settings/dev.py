@@ -14,7 +14,7 @@ LOGGING = {
         }
     },
     'loggers': {
-        'django': {
+        'land': {
             'handlers': ['xyz_console'],
             'level': 'DEBUG'
         }
