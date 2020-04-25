@@ -9,7 +9,7 @@ urlpatterns = [
     path('video/<int:id>/', views.video, name='video'),
     path('about', views.about, name='about'),
     path('upgrade', views.upgrade, name='upgrade'),
-    path('checkout', views.checkout, name='checkout'),
+    path('card-payment', views.payment_method, name='payment_method'),
     path('contact', views.contact, name='contact'),
     path('register', views.register, name='register'),
     path('accounts/', include('django.contrib.auth.urls')),

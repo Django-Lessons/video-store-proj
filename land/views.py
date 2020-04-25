@@ -2,6 +2,7 @@ import logging
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from land.models import Video
+from land.payments import prepare_card_context
 
 
 logger = logging.getLogger(__name__)
@@ -48,8 +49,20 @@ def upgrade(request):
 
 
 @login_required
-def checkout(request):
-    pass
+def payment_method(request):
+    if request.method != 'GET':
+        return render(request, 'land/payments/upgrade.html')
+
+    payment_method = request.GET.get('payment_method', 'card')
+
+    if payment_method == 'card':
+        context = prepare_card_context()
+        return render(
+            request,
+            'land/payments/card.html',
+            context
+        )
+    return render(request, 'land/payments/upgrade.html')
 #    # accepts only GET and POST
 #    # GET
 #    if request.method == 'GET':
