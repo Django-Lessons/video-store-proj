@@ -42,7 +42,7 @@
             {% if user.is_pro_user %}
               <a class="dropdown-item" href="#">PRO Account</a>
             {% else %}
-              <a class="dropdown-item" href="#"><del>Upgrade to PRO</del></a>
+              <a class="dropdown-item" href="{% url 'upgrade' %}">Upgrade to PRO</a>
             {% endif %}
             <a class="dropdown-item" href="#">Profile</a>
             <div class="dropdown-divider"></div>

@@ -1,5 +1,6 @@
 import logging
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from land.models import Video
 
 
@@ -38,4 +39,60 @@ def about(request):
 
 def contact(request):
     return render(request, 'land/contact.html')
- 
+
+
+@login_required
+def upgrade(request):
+    logger.info("upgrade")
+    return render(request, 'land/payments/upgrade.html')
+
+
+@login_required
+def checkout(request):
+    pass
+#    # accepts only GET and POST
+#    # GET
+#    if request.method == 'GET':
+#
+#        payment_method = request.GET.get('payment_method', 'card')
+#
+#        # paypal coming soon...
+#        if payment_method == 'paypal':
+#            return render(
+#                request,
+#                'lessons/checkout/paypal.html'
+#            )
+#
+#        lesson_plan = LessonsPlan(
+#            request.GET.get('plan', False)
+#        )
+#
+#        secret_key = create_payment_intent(
+#            lesson_plan=lesson_plan
+#        )
+#        return render(
+#            request,
+#            'lessons/checkout/card.html',
+#            {
+#                'plan_id': lesson_plan.id,
+#                'secret_key': secret_key,
+#                'customer_email': request.user.email,
+#                'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY
+#            }
+#        )
+#
+#    if request.method != 'POST':
+#        return HttpResponseBadRequest()
+#
+#    lesson_plan = LessonsPlan(
+#        request.POST.get('plan_id', False)
+#    )
+#
+#    # POST
+#    create_payment_subscription(
+#        email=request.user.email,
+#        lesson_plan=lesson_plan,
+#        payment_method_id=request.POST.get('payment_method_id', False)
+#    )
+#
+#    return render(request, 'lessons/checkout/thank_you.html')#
