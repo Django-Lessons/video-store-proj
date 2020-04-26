@@ -1,7 +1,21 @@
+import stripe
 import datetime
 from datetime import date
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+
+API_KEY = settings.STRIPE_SECRET_KEY
+
+
+class StripeCustomer(models.Model):
+    customer_id = models.CharField(max_length=64)
+    email = models.CharField(max_length=64)
+    payment_method_id = models.CharField(max_length=64)
+
+
+class StripeSubscription(models.Model):
+    subscription_id = models.CharField(max_length=64)
 
 
 class User(AbstractUser):
@@ -31,6 +45,51 @@ class User(AbstractUser):
             return False
 
         return current_date < self.paid_until
+
+    def get_or_create_customer(self, payment_method_id):
+        customer_id = None
+        try:
+            customer = StripeCustomer.objects.get(
+                email=self.email,
+                payment_method_id=payment_method_id
+            )
+            customer_id = customer.customer_id
+        except StripeCustomer.DoesNotExist:
+            customer = stripe.Customer.create(
+                email=self.email,
+                payment_method=payment_method_id,
+                invoice_settings={
+                    'default_payment_method': payment_method_id,
+                },
+            )
+            StripeCustomer.objects.create(
+                email=self.email,
+                payment_method_id=payment_method_id,
+                customer_id=customer.id
+            )
+            customer_id = customer.id
+
+        return customer_id
+
+    def create_or_update_subscription(
+        self,
+        customer_id,
+        stripe_plan_id
+    ):
+        try:
+            StripeSubscription.objects.get(
+                customer_id=customer_id
+            )
+        except StripeSubscription.DoesNotExist:
+            stripe.api_key = API_KEY
+            stripe.Subscription.create(
+                customer=customer_id,
+                items=[
+                    {
+                        'plan': stripe_plan_id,
+                    },
+                ]
+            )
 
 
 class Video(models.Model):
