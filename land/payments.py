@@ -50,27 +50,6 @@ class VideosPlan:
         return self.plan.amount
 
 
-def create_subscription(email, plan, payment_method_id):
-    stripe.api_key = API_KEY
-
-    customer = stripe.Customer.create(
-        email=email,
-        payment_method=payment_method_id,
-        invoice_settings={
-            'default_payment_method': payment_method_id,
-        },
-    )
-
-    stripe.Subscription.create(
-        customer=customer.id,
-        items=[
-            {
-                'plan': plan.stripe_plan_id,
-            },
-        ]
-    )
-
-
 def pay_with_card(request):
 
     payment_method_id = request.POST.get('payment_method_id')
@@ -82,22 +61,33 @@ def pay_with_card(request):
     )
     stripe_plan_id = request.POST.get('plan_id', False)
 
-    stripe.PaymentIntent.modify(
-        request.POST.get('payment_intent_id'),
-        payment_method=payment_method_id
+    customer = stripe.Customer.create(
+        email=request.user.email,
+        payment_method=payment_method_id,
+        invoice_settings={
+            'default_payment_method': payment_method_id,
+        },
     )
 
+    stripe.PaymentIntent.modify(
+        request.POST.get('payment_intent_id'),
+        customer=customer.id
+    )
+
+    # create subscription before payment confirmation
+    if automatic == 'on':
+        stripe.Subscription.create(
+            customer=customer.id,
+            items=[
+                {
+                    'plan': stripe_plan_id,
+                },
+            ]
+        )
     stripe.PaymentIntent.confirm(
         request.POST.get('payment_intent_id'),
         payment_method=payment_method_id
     )
-
-    if automatic == 'on':
-        create_subscription(
-            request.user.email,
-            stripe_plan_id,
-            payment_method_id
-        )
 
 
 def prepare_card_context(request):
