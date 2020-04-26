@@ -1,5 +1,8 @@
-from django.conf import settings
+import logger
 import stripe
+
+from django.conf import settings
+from land.models import User
 
 MONTH = 'm'
 ANNUAL = 'a'
@@ -115,3 +118,41 @@ def prepare_card_context(request):
         'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY
     }
     return context
+
+
+def set_paid_until(invoice):
+    """
+    invoice = is stripe.invoice object instance
+    from invoice.payment_succeeded webhook
+    """
+    # invoice['customer_email']
+    # invoice['paid'] = true|false
+    # invoice['current_period_end'] # timestamp of end of subscription
+    email = invoice['customer_email']
+    logger.info(f"email={email}")
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        logger.warning(
+            f"User with email {email} not found while trying to upgrade to PRO"
+        )
+        return False
+
+    subscr = stripe.Subscription.retrieve(
+        id=invoice['subscription']
+    )
+
+    current_period_end = subscr['current_period_end']
+    logger.info(f"subscription_id={invoice['subscription']}")
+    logger.info(f"invoice paid = {invoice['paid']}")
+    logger.info(f"pro_enddate= {subscr['current_period_end']}")
+
+    if invoice['paid']:
+        user.set_paid_until(current_period_end)
+        logger.info(
+            f"Profile with {current_period_end} saved for user {email}"
+        )
+    else:
+        logger.info("Invoice is was NOT paid!")
+
+    return True

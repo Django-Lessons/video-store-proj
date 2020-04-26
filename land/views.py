@@ -1,10 +1,18 @@
 import logging
+import stripe
+from django.conf import settings
+from django.http import (
+    HttpResponse
+)
 from django.shortcuts import render
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from land.models import Video
 from land.payments import (
     prepare_card_context,
-    pay_with_card
+    pay_with_card,
+    set_paid_until
 )
 
 
@@ -73,6 +81,40 @@ def card(request):
     pay_with_card(request)
 
     return render(request, 'land/payments/thank_you.html')
+
+
+@require_POST
+@csrf_exempt
+def stripe_webhooks(request):
+    logger.info("Stripe webhook received")
+
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SIGNING_KEY
+        )
+        logger.info("Event constructed correctly")
+    except ValueError:
+        # Invalid payload
+        logger.warning("Invalid Payload")
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError:
+        # Invalid signature
+        logger.warning("Invalid signature")
+        return HttpResponse(status=400)
+
+    # Handle the event
+    if event.type == 'invoice.payment_succeeded':
+        # ... handle other event types
+        set_paid_until(invoice=event.data.object)
+    else:
+        # Unexpected event type
+        return HttpResponse(status=400)
+
+    return HttpResponse(status=200)
 
 
 @login_required

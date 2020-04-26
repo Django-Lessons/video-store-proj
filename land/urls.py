@@ -11,6 +11,7 @@ urlpatterns = [
     path('upgrade', views.upgrade, name='upgrade'),
     path('card-payment', views.payment_method, name='payment_method'),
     path('card', views.card, name='card'),
+    path('stripe-webhooks', views.stripe_webhooks, name='strpe_webhooks'),
     path('paypal', views.paypal, name='paypal'),
     path('contact', views.contact, name='contact'),
     path('register', views.register, name='register'),
