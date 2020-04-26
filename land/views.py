@@ -57,6 +57,7 @@ def payment_method(request):
         return render(request, 'land/payments/upgrade.html')
 
     payment_method = request.GET.get('payment_method', 'card')
+    
 
     if payment_method == 'card':
         context = prepare_card_context(request)
