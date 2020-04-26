@@ -110,9 +110,6 @@ def stripe_webhooks(request):
     if event.type == 'invoice.payment_succeeded':
         # ... handle other event types
         set_paid_until(invoice=event.data.object)
-    else:
-        # Unexpected event type
-        return HttpResponse(status=400)
 
     return HttpResponse(status=200)
 
