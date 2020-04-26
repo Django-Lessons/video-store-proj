@@ -67,7 +67,13 @@ def payment_method(request):
 
 @login_required
 def card(request):
+    return render(request, 'land/payments/thank_you.html')
+
+
+@login_required
+def paypal(request):
     pass
+
 
 #    # accepts only GET and POST
 

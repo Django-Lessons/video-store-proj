@@ -58,7 +58,7 @@ def prepare_card_context(request):
     context = {}
 
     plan = VideosPlan(
-        plan_id=request.GET.get('plan_id', False)
+        plan_id=request.GET.get('plan', False)
     )
 
     payment_intent = PaymentIntent.create(
