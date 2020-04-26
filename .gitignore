@@ -1,3 +1,4 @@
 *.sqlite3
 .venv/
 *.pyc
+env.sh

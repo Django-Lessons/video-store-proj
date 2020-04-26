@@ -1,0 +1,39 @@
+{% extends 'land/base.html' %}
+{% load static %}
+
+{% block right_sidebar %} {% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{% static 'land/js/card.js' %}"></script>
+<script>
+  card('{{STRIPE_PUBLISHABLE_KEY}}', '{{customer_email}}');
+</script>
+{% endblock extra_js %}
+
+{% block extra_css %}
+{% endblock extra_css %}
+
+{% block central_content %}
+    <div class="row py-3">
+        <div class="col-lg-12 col-md-12">
+           <div class="container">
+            <form action="{% url 'card' %}" method="post" id="payment-form">
+                {% csrf_token %}
+                <input type="hidden" value="{{plan_id}}" name="plan_id"/>
+                <div class="form-group">
+                  <label for="card-element">Credit or debit card</label>
+                  <div id="card-element">
+                    <!-- A Stripe Element will be inserted here. -->
+                  </div>
+                  <!-- Used to display form errors. -->
+                  <div id="card-errors" role="alert"></div>
+                </div>
+                <input type="hidden" name="client_secret" value="{{ client_secret }}" >
+
+              <button id="card-button" data-secret="{{ client_secret }}" class="btn btn-success">Pay Now</button>
+            </form>
+           </div>
+        </div>
+    </div>  
+{% endblock %}

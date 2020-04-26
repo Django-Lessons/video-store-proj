@@ -1,3 +1,4 @@
+import os
 from .base import *
 
 DEBUG = True
@@ -20,3 +21,8 @@ LOGGING = {
         }
     }
 }
+
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+STRIPE_PLAN_MONTHLY_ID = os.environ.get('STRIPE_PLAN_MONTHLY_ID')
+STRIPE_PLAN_ANNUAL_ID = os.environ.get('STRIPE_PLAN_ANNUAL_ID')

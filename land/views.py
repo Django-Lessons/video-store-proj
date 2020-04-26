@@ -56,14 +56,21 @@ def payment_method(request):
     payment_method = request.GET.get('payment_method', 'card')
 
     if payment_method == 'card':
-        context = prepare_card_context()
+        context = prepare_card_context(request)
         return render(
             request,
             'land/payments/card.html',
             context
         )
     return render(request, 'land/payments/upgrade.html')
+
+
+@login_required
+def card(request):
+    pass
+
 #    # accepts only GET and POST
+
 #    # GET
 #    if request.method == 'GET':
 #
