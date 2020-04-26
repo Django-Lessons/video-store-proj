@@ -65,20 +65,28 @@ def pay_with_card(request):
     )
     stripe_plan_id = request.POST.get('plan_id', False)
 
-    customer_id = request.user.get_or_create_customer(
-        payment_method_id=payment_method_id
+    customer = stripe.Customer.create(
+        email=request.user.email,
+        payment_method=payment_method_id,
+        invoice_settings={
+            'default_payment_method': payment_method_id,
+        },
     )
 
     stripe.PaymentIntent.modify(
         request.POST.get('payment_intent_id'),
-        customer=customer_id
+        customer=customer.id
     )
 
     # create subscription before payment confirmation
     if automatic == 'on':
-        customer_id = request.user.create_or_update_subscription(
-            customer_id=customer_id,
-            stripe_plan_id=stripe_plan_id
+        stripe.Subscription.create(
+            customer=customer.id,
+            items=[
+                {
+                    'plan': stripe_plan_id,
+                },
+            ]
         )
     stripe.PaymentIntent.confirm(
         request.POST.get('payment_intent_id'),
