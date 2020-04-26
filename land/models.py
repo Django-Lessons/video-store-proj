@@ -1,4 +1,3 @@
-import stripe
 import datetime
 from datetime import date
 from django.db import models
@@ -8,24 +7,15 @@ from django.contrib.auth.models import AbstractUser
 API_KEY = settings.STRIPE_SECRET_KEY
 
 
-class StripeCustomer(models.Model):
-    customer_id = models.CharField(max_length=64)
-    email = models.CharField(max_length=64)
-    payment_method_id = models.CharField(max_length=64)
-
-
-class StripeSubscription(models.Model):
-    customer_id = models.CharField(
-        max_length=64,
-        default='xyz'
-    )
-    subscription_id = models.CharField(max_length=64)
-
-
 class User(AbstractUser):
     paid_until = models.DateField(
         null=True,
         blank=True
+    )
+    subscription_id = models.CharField(
+        max_length=64,
+        null=True,
+        blank=True,
     )
 
     def set_paid_until(self, date_or_timestamp):

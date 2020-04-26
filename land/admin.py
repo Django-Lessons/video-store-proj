@@ -2,8 +2,6 @@ from django.contrib import admin
 from land.models import (
     Video,
     User,
-    StripeCustomer,
-    StripeSubscription
 )
 
 
@@ -25,5 +23,3 @@ class AdminStripeSubscription(admin.ModelAdmin):
 
 admin.site.register(Video, AdminVideo)
 admin.site.register(User, AdminUser)
-admin.site.register(StripeCustomer, AdminStripeCustomer)
-admin.site.register(StripeSubscription, AdminStripeSubscription)
