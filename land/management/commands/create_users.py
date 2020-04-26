@@ -22,6 +22,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--count',
             '-c',
+            type=int,
             help="Number/Count of users to create"
         )
         parser.add_argument(
@@ -40,5 +41,5 @@ class Command(BaseCommand):
                 username=f"user{n}",
                 email=f"user{n}@mail.com"
             )
-            u.set_pasword(password)
+            u.set_password(password)
             u.save()
