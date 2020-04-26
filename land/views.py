@@ -2,7 +2,10 @@ import logging
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from land.models import Video
-from land.payments import prepare_card_context
+from land.payments import (
+    prepare_card_context,
+    pay_with_card
+)
 
 
 logger = logging.getLogger(__name__)
@@ -67,6 +70,8 @@ def payment_method(request):
 
 @login_required
 def card(request):
+    pay_with_card(request)
+
     return render(request, 'land/payments/thank_you.html')
 
 

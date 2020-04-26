@@ -1,9 +1,5 @@
 from django.conf import settings
-from stripe import (
-    Customer,
-    Subscription,
-    PaymentIntent
-)
+import stripe
 
 MONTH = 'm'
 ANNUAL = 'a'
@@ -54,15 +50,35 @@ class VideosPlan:
         return self.plan.amount
 
 
+def pay_with_card(request):
+
+    payment_method_id = request.POST.get('payment_method_id')
+
+    stripe.api_key = API_KEY
+    stripe.PaymentIntent.retrieve(
+        request.POST.get('payment_intent_id')
+    )
+
+    stripe.PaymentIntent.modify(
+        request.POST.get('payment_intent_id'),
+        payment_method=payment_method_id
+    )
+
+    stripe.PaymentIntent.confirm(
+        request.POST.get('payment_intent_id'),
+        payment_method=payment_method_id
+    )
+
+
 def prepare_card_context(request):
     context = {}
+    stripe.api_key = API_KEY
 
     plan = VideosPlan(
         plan_id=request.GET.get('plan', False)
     )
 
-    payment_intent = PaymentIntent.create(
-        api_key=API_KEY,
+    payment_intent = stripe.PaymentIntent.create(
         amount=plan.amount,
         currency=plan.currency,
         payment_method_types=["card"],
@@ -71,6 +87,7 @@ def prepare_card_context(request):
     context = {
         'plan_id': plan.stripe_plan_id,
         'secret_key': secret_key,
+        'payment_intent_id': payment_intent.id,
         'customer_email': request.user.email,
         'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY
     }
