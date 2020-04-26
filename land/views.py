@@ -12,7 +12,8 @@ from land.models import Video
 from land.payments import (
     prepare_card_context,
     pay_with_card,
-    set_paid_until
+    set_paid_until,
+    save_subscription
 )
 
 
@@ -110,6 +111,8 @@ def stripe_webhooks(request):
     if event.type == 'invoice.payment_succeeded':
         # ... handle other event types
         set_paid_until(invoice=event.data.object)
+    if event.type == 'customer.subscription.created':
+        save_subscription(event.data.object)
 
     return HttpResponse(status=200)
 

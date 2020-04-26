@@ -17,6 +17,11 @@ class User(AbstractUser):
         null=True,
         blank=True,
     )
+    customer_id = models.CharField(
+        max_length=64,
+        null=True,
+        blank=True
+    )
 
     def set_paid_until(self, date_or_timestamp):
         if isinstance(date_or_timestamp, int):

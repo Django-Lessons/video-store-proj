@@ -73,6 +73,12 @@ def pay_with_card(request):
         },
     )
 
+    # Saving customer_id allows us to save
+    # subscription id - which allows us to cancel
+    # subscription if users wishes to do so.
+    request.user.customer_id = customer.id
+    request.user.save()
+
     stripe.PaymentIntent.modify(
         request.POST.get('payment_intent_id'),
         customer=customer.id
@@ -157,3 +163,13 @@ def set_paid_until(invoice):
         logger.info("Invoice is was NOT paid!")
 
     return True
+
+
+def save_subscription(subscription):
+    customer_id = subscription['customer']
+    try:
+        user = User.objects.get(customer_id=customer_id)
+        user.subscription_id = subscription['id']
+        user.save()
+    except User.DoesNotExist:
+        logger.error("Was unable to save subscription")
