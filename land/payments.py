@@ -145,6 +145,10 @@ def set_paid_until(invoice):
         )
         return False
 
+    # check if subscription exists. If user chose not to subscribe,
+    # will need to add 31 days to current date
+    # if invoice_paid is 1990
+    # or add 365 days if invoice paid is 19950
     subscr = stripe.Subscription.retrieve(
         id=invoice['subscription']
     )
