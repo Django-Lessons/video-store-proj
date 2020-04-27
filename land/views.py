@@ -45,3 +45,9 @@ def contact(request):
 def upgrade(request):
     logger.info("upgrade")
     return render(request, 'land/payments/upgrade.html')
+
+
+@login_required
+def profile(request):
+    logger.info("profile")
+    return render(request, 'land/profile.html')
