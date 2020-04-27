@@ -8,6 +8,8 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('video/<int:id>/', views.video, name='video'),
     path('about', views.about, name='about'),
+    path('upgrade', views.upgrade, name='upgrade'),
+    path('profile', views.profile, name='profile'),
     path('contact', views.contact, name='contact'),
     path('register', views.register, name='register'),
     path('accounts/', include('django.contrib.auth.urls')),

@@ -1,4 +1,5 @@
 import logging
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from land.models import Video
 
@@ -38,4 +39,9 @@ def about(request):
 
 def contact(request):
     return render(request, 'land/contact.html')
- 
+
+
+@login_required
+def upgrade(request):
+    logger.info("upgrade")
+    return render(request, 'land/payments/upgrade.html')
