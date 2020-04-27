@@ -6,7 +6,8 @@
         <div class="col-lg-12 col-md-12">
            <div class="container">
                 <h3>Upgrade to PRO</h3>
-                <form method="GET" action="{% url 'payment_method' %}">
+                <form method="POST" action="{% url 'payment_method' %}">
+                    {% csrf_token %}
                     <div class="form-group">
                       <label for="exampleFormControlSelect1">Plan</label>
                       <select class="form-control" id="exampleFormControlSelect1" name="plan">

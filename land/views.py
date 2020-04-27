@@ -48,6 +48,11 @@ def upgrade(request):
 
 
 @login_required
+def payment_method(request):
+    pass
+
+
+@login_required
 def profile(request):
     logger.info("profile")
     return render(request, 'land/profile.html')
