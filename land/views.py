@@ -75,6 +75,7 @@ def payment_method(request):
 
         context['secret_key'] = payment_intent.client_secret
         context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLISHABLE_KEY
+        context['customer_email'] = request.user.email
 
         return render(request, 'land/payments/card.html', context)
 

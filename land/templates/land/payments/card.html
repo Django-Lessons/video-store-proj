@@ -1,0 +1,26 @@
+{% extends 'land/base.html' %}
+{% load static %}
+
+{% block right_sidebar %} {% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{% static 'land/js/card.js' %}"></script>
+<script>
+  card('{{STRIPE_PUBLISHABLE_KEY}}', '{{customer_email}}');
+</script>
+{% endblock extra_js %}
+
+{% block extra_css %}
+{% endblock extra_css %}
+
+{% block central_content %}
+    <div class="row py-3">
+        <div class="col-lg-12 col-md-12">
+           <div class="container">
+            <form action="#" method="post" id="payment-form">
+            </form>
+           </div>
+        </div>
+    </div>  
+{% endblock %}
