@@ -76,6 +76,7 @@ def payment_method(request):
         context['secret_key'] = payment_intent.client_secret
         context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLISHABLE_KEY
         context['customer_email'] = request.user.email
+        context['payment_intent_id'] = payment_intent.id
 
         return render(request, 'land/payments/card.html', context)
 
@@ -88,4 +89,6 @@ def profile(request):
 
 @login_required
 def card(request):
+    # request.POST['payment_intent_id']
+    # request.POST['payment_method_id']
     return render(request, 'land/payments/thank_you.html')
