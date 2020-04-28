@@ -61,7 +61,7 @@ function card(stripe_publishable_key, customer_email) {
 
                   hiddenInput.setAttribute('type', 'hidden');
                   hiddenInput.setAttribute('name', 'payment_method_id');
-                  hiddenInput.setAttribute('value', payment_method_result.id);
+                  hiddenInput.setAttribute('value', payment_method_result.paymentMethod.id);
 
                   form.appendChild(hiddenInput);
                   // Submit the form
