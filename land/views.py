@@ -84,3 +84,8 @@ def payment_method(request):
 def profile(request):
     logger.info("profile")
     return render(request, 'land/profile.html')
+
+
+@login_required
+def card(request):
+    return render(request, 'land/payments/thank_you.html')
