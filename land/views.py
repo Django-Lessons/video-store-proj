@@ -89,6 +89,17 @@ def profile(request):
 
 @login_required
 def card(request):
-    # request.POST['payment_intent_id']
-    # request.POST['payment_method_id']
+
+    payment_intent_id = request.POST['payment_intent_id']
+    payment_method_id = request.POST['payment_method_id']
+
+    stripe.api_key = API_KEY
+    stripe.PaymentIntent.modify(
+        payment_intent_id,
+        payment_method=payment_method_id
+    )
+    stripe.PaymentIntent.confirm(
+        payment_intent_id
+    )
+
     return render(request, 'land/payments/thank_you.html')
