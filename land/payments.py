@@ -81,6 +81,8 @@ def set_paid_until(invoice):
             )
         else:
             logger.info("Invoice is was NOT paid!")
+    else:
+        import pdb; pdb.set_trace()
 
     return True
 

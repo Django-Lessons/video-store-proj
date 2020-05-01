@@ -8,7 +8,11 @@ from django.http import (
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.conf import settings
-from land.payments import VideosPlan
+from land.payments import (
+    VideosPlan,
+    set_paid_until,
+    save_subscription
+)
 from land.models import Video
 
 API_KEY = settings.STRIPE_SECRET_KEY
@@ -42,6 +46,8 @@ def stripe_webhooks(request):
     if event.type == 'invoice.payment_succeeded':
         # ... handle other event types
         set_paid_until(invoice=event.data.object)
+    if event.type == 'customer.subscription.created':
+        save_subscription(event.data.object)
 
     return HttpResponse(status=200)
 
