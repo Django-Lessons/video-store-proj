@@ -102,8 +102,8 @@ def card(request):
         # create subs
         customer = stripe.Customer.create(
             email=request.user.email,
-            payment_method_id=payment_method_id,
-            invioce_settings={
+            payment_method=payment_method_id,
+            invoice_settings={
                 'default_payment_method': payment_method_id
             }
         )
