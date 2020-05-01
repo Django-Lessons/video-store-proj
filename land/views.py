@@ -126,8 +126,14 @@ def card(request):
             payment_method=payment_method_id
         )
 
-    stripe.PaymentIntent.confirm(
+    ret = stripe.PaymentIntent.confirm(
         payment_intent_id
     )
+
+    if ret.status == 'requires_action':
+
+        context = {}
+        context['url'] = ret.next_action.redirect_to_url.url
+        return render(request, 'land/payments/3dsec.html', context)
 
     return render(request, 'land/payments/thank_you.html')
