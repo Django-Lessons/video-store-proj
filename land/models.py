@@ -47,6 +47,11 @@ class Video(models.Model):
         on_delete=models.CASCADE,
         default=1
     )
+    pro = models.BooleanField(
+        blank=True,
+        null=True,
+        default=False
+    )
 
     class Meta:
         verbose_name = "Video"

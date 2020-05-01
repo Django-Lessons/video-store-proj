@@ -1,4 +1,11 @@
 {% extends 'land/base.html' %}
 
 {% block central_content %}
+    <div class="my-4">
+        {% if user.has_paid %}
+            PRO ACCOUNT until {{ user.paid_until }}
+        {% else %}
+            Upgrade to PRO {% url 'upgrade' %}
+        {% endif %}
+    </div>
 {% endblock central_content %}

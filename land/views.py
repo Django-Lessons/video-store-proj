@@ -6,7 +6,7 @@ from django.http import (
     HttpResponse
 )
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
+from django.shortcuts import (render, redirect)
 from django.conf import settings
 from land.payments import (
     VideosPlan,
@@ -68,6 +68,12 @@ def register(request):
 def video(request, id):
     video = Video.objects.filter(id=id).first()
 
+    if not request.user.is_authenticated and video.pro:
+        return redirect('index')
+
+    if video.pro and not request.user.has_paid():
+        return redirect('index')
+
     return render(
         request,
         'land/video.html',
@@ -106,6 +112,7 @@ def payment_method(request):
     payment_intent = stripe.PaymentIntent.create(
         amount=plan_inst.amount,
         currency=plan_inst.currency,
+        setup_future_usage='off_session',
         payment_method_types=['card']
     )
 
@@ -124,7 +131,8 @@ def payment_method(request):
 @login_required
 def profile(request):
     logger.info("profile")
-    return render(request, 'land/profile.html')
+    user = request.user
+    return render(request, 'land/profile.html', {'user': user})
 
 
 @login_required
