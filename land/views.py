@@ -2,6 +2,10 @@ import stripe
 import logging
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.http import (
+    HttpResponse
+)
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.conf import settings
 from land.payments import VideosPlan
@@ -9,6 +13,37 @@ from land.models import Video
 
 API_KEY = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
+
+
+@require_POST
+@csrf_exempt
+def stripe_webhooks(request):
+    logger.info("Stripe webhook received")
+
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SIGNING_KEY
+        )
+        logger.info("Event constructed correctly")
+    except ValueError:
+        # Invalid payload
+        logger.warning("Invalid Payload")
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError:
+        # Invalid signature
+        logger.warning("Invalid signature")
+        return HttpResponse(status=400)
+
+    # Handle the event
+    if event.type == 'invoice.payment_succeeded':
+        # ... handle other event types
+        set_paid_until(invoice=event.data.object)
+
+    return HttpResponse(status=200)
 
 
 def index(request):
