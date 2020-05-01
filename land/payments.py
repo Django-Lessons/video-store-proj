@@ -63,22 +63,24 @@ def set_paid_until(charge):
                 customer['subscriptions'].data[0].id
             )
 
-    current_period_end = subscr['current_period_end']
+        current_period_end = subscr['current_period_end']
 
-    if charge.paid:
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            logger.warning(
-                f"User with email {email} not found"
+        if charge.paid:
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                logger.warning(
+                    f"User with email {email} not found"
+                )
+                return False
+            user.set_paid_until(current_period_end)
+            logger.info(
+                f"Profile with {current_period_end} saved for user {email}"
             )
-            return False
-        user.set_paid_until(current_period_end)
-        logger.info(
-            f"Profile with {current_period_end} saved for user {email}"
-        )
     else:
-        # handle payments without subscription
+        # this was one time payment, update
+        # paid_until (e.g. paid_until = current_date + 31 days) using
+        # charge.paid + charge.amount attrs
         pass
 
     return True
