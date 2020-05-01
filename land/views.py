@@ -77,6 +77,8 @@ def payment_method(request):
         context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLISHABLE_KEY
         context['customer_email'] = request.user.email
         context['payment_intent_id'] = payment_intent.id
+        context['automatic'] = automatic
+        context['stripe_plan_id'] = plan_inst.stripe_plan_id
 
         return render(request, 'land/payments/card.html', context)
 
@@ -92,12 +94,38 @@ def card(request):
 
     payment_intent_id = request.POST['payment_intent_id']
     payment_method_id = request.POST['payment_method_id']
-
+    stripe_plan_id = request.POST['stripe_plan_id']
+    automatic = request.POST['automatic']
     stripe.api_key = API_KEY
-    stripe.PaymentIntent.modify(
-        payment_intent_id,
-        payment_method=payment_method_id
-    )
+
+    if automatic == 'on':
+        # create subs
+        customer = stripe.Customer.create(
+            email=request.user.email,
+            payment_method_id=payment_method_id,
+            invioce_settings={
+                'default_payment_method': payment_method_id
+            }
+        )
+        stripe.Subscription.create(
+            customer=customer.id,
+            items=[
+                {
+                    'plan': stripe_plan_id
+                },
+            ]
+        )
+        stripe.PaymentIntent.modify(
+            payment_intent_id,
+            payment_method=payment_method_id,
+            customer=customer.id
+        )
+    else:
+        stripe.PaymentIntent.modify(
+            payment_intent_id,
+            payment_method=payment_method_id
+        )
+
     stripe.PaymentIntent.confirm(
         payment_intent_id
     )
