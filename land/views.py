@@ -131,9 +131,13 @@ def card(request):
     )
 
     if ret.status == 'requires_action':
-
+        pi = stripe.PaymentIntent.retrieve(
+            payment_intent_id
+        )
         context = {}
-        context['url'] = ret.next_action.redirect_to_url.url
+        context['payment_intent_secret'] = pi.client_secret
+        context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLISHABLE_KEY
+
         return render(request, 'land/payments/3dsec.html', context)
 
     return render(request, 'land/payments/thank_you.html')

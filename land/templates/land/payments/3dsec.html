@@ -7,7 +7,7 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script src="{% static 'land/js/3dsec.js' %}"></script>
 <script>
-  _3dsec('{{ url }}');
+  _3dsec('{{ STRIPE_PUBLISHABLE_KEY }}', '{{payment_intent_secret}}');
 </script>
 {% endblock extra_js %}
 
@@ -18,7 +18,7 @@
     <div class="row py-3">
         <div class="col-lg-12 col-md-12">
            <div class="container">
-              <div id="3dsec">
+              <div id="3ds_result">
               </div>
            </div>
         </div>
