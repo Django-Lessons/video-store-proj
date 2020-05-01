@@ -49,49 +49,36 @@ class VideosPlan:
         return self.plan.amount
 
 
-def set_paid_until(invoice):
-    """
-    invoice = is stripe.invoice object instance
-    from invoice.payment_succeeded webhook
-    """
-    # invoice['customer_email']
-    # invoice['paid'] = true|false
-    # invoice['current_period_end'] # timestamp of end of subscription
-    email = invoice['customer_email']
-    logger.info(f"email={email}")
-    try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
-        logger.warning(
-            f"User with email {email} not found while trying to upgrade to PRO"
-        )
-        return False
+def set_paid_until(charge):
+    stripe.api_key = API_KEY
 
-    if invoice['subscription']:
-        subscr = stripe.Subscription.retrieve(
-            id=invoice['subscription']
-        )
+    pi = stripe.PaymentIntent.retrieve(charge.payment_intent)
 
-        current_period_end = subscr['current_period_end']
-
-        if invoice['paid']:
-            user.set_paid_until(current_period_end)
-            logger.info(
-                f"Profile with {current_period_end} saved for user {email}"
+    if pi.customer:
+        # there is a customers => there must be a subscription
+        customer = stripe.Customer.retrieve(pi.customer)
+        email = customer.email
+        if customer:
+            subscr = stripe.Subscription.retrieve(
+                customer['subscriptions'].data[0].id
             )
-        else:
-            logger.info("Invoice is was NOT paid!")
+
+    current_period_end = subscr['current_period_end']
+
+    if charge.paid:
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            logger.warning(
+                f"User with email {email} not found"
+            )
+            return False
+        user.set_paid_until(current_period_end)
+        logger.info(
+            f"Profile with {current_period_end} saved for user {email}"
+        )
     else:
-        import pdb; pdb.set_trace()
+        # handle payments without subscription
+        pass
 
     return True
-
-
-def save_subscription(subscription):
-    customer_id = subscription['customer']
-    try:
-        user = User.objects.get(customer_id=customer_id)
-        user.subscription_id = subscription['id']
-        user.save()
-    except User.DoesNotExist:
-        logger.error("Was unable to save subscription")

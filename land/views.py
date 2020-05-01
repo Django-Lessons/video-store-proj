@@ -11,7 +11,6 @@ from django.conf import settings
 from land.payments import (
     VideosPlan,
     set_paid_until,
-    save_subscription
 )
 from land.models import Video
 
@@ -43,11 +42,9 @@ def stripe_webhooks(request):
         return HttpResponse(status=400)
 
     # Handle the event
-    if event.type == 'invoice.payment_succeeded':
-        # ... handle other event types
-        set_paid_until(invoice=event.data.object)
-    if event.type == 'customer.subscription.created':
-        save_subscription(event.data.object)
+    if event.type == 'charge.succeeded':
+        # object has  payment_intent attr
+        set_paid_until(event.data.object)
 
     return HttpResponse(status=200)
 
