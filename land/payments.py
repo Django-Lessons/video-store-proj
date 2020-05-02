@@ -45,3 +45,7 @@ class VideosPlan:
     @property
     def amount(self):
         return self.plan.amount
+
+
+def set_paid_until(charge):
+    logger.info(f"set_paid_until with {charge}")
