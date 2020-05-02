@@ -126,8 +126,19 @@ def card(request):
             payment_method=payment_method_id
         )
 
-    stripe.PaymentIntent.confirm(
+    ret = stripe.PaymentIntent.confirm(
         payment_intent_id
     )
+
+    if ret.status == 'requires_action':
+        pi = stripe.PaymentIntent.retrieve(
+            payment_intent_id
+        )
+        context = {}
+
+        context['payment_intent_secret'] = pi.client_secret
+        context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLISHABLE_KEY
+
+        return render(request, 'land/payments/3dsec.html', context)
 
     return render(request, 'land/payments/thank_you.html')
