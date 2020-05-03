@@ -141,7 +141,7 @@ def card(request):
                 'default_payment_method': payment_method_id
             }
         )
-        stripe.Subscription.create(
+        s = stripe.Subscription.create(
             customer=customer.id,
             items=[
                 {
@@ -149,30 +149,26 @@ def card(request):
                 },
             ]
         )
-        stripe.PaymentIntent.modify(
-            payment_intent_id,
-            payment_method=payment_method_id,
-            customer=customer.id
+        latest_invoice = stripe.Invoice.retrieve(s.latest_invoice)
+
+        ret = stripe.PaymentIntent.confirm(
+            latest_invoice.payment_intent
         )
+
+        if ret.status == 'requires_action':
+            pi = stripe.PaymentIntent.retrieve(
+                latest_invoice.payment_intent
+            )
+            context = {}
+
+            context['payment_intent_secret'] = pi.client_secret
+            context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLISHABLE_KEY
+
+            return render(request, 'land/payments/3dsec.html', context)
     else:
         stripe.PaymentIntent.modify(
             payment_intent_id,
             payment_method=payment_method_id
         )
-
-    ret = stripe.PaymentIntent.confirm(
-        payment_intent_id
-    )
-
-    if ret.status == 'requires_action':
-        pi = stripe.PaymentIntent.retrieve(
-            payment_intent_id
-        )
-        context = {}
-
-        context['payment_intent_secret'] = pi.client_secret
-        context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLISHABLE_KEY
-
-        return render(request, 'land/payments/3dsec.html', context)
 
     return render(request, 'land/payments/thank_you.html')
