@@ -1,3 +1,5 @@
+import yaml
+import os
 import logging
 from django.core.management.base import BaseCommand
 
@@ -6,6 +8,16 @@ logger = logging.getLogger(__name__)
 
 PRODUCT = "product"
 PLAN = "plan"
+
+BASE_DIR = os.path.join(
+    "..",  # proj
+    "..",  # land
+    "..",  # management
+    os.path.dirname(__file__)  # commands
+)
+
+PRODUCT_CONF_PATH = os.path.join("paypal", "product.yml")
+PLAN_CONF_PATH = os.path.join("paypal", "plan.yml")
 
 class Command(BaseCommand):
 
@@ -26,6 +38,34 @@ class Command(BaseCommand):
             choices=[PRODUCT, PLAN],
             help="List Paypal products or plans"
         )
+
+    def create_product(self):
+        with open(PRODUCT_CONF_PATH, "r") as f:
+            conf = yaml.safe_load(f)
+            logger.debug(conf)
+
+    def create_plan(self):
+        with open(PLAN_CONF_PATH, "r") as f:
+            conf = yaml.safe_load(f)
+            logger.debug(conf)
+
+    def list_product(self):
+        pass
+
+    def list_plan(self):
+        pass
+
+    def create(self, what):
+        if what == PRODUCT:
+            self.create_product()
+        else:
+            self.create_plan()
+
+    def list(self, what):
+        if what == PRODUCT:
+            self.list_product()
+        else:
+            self.list_plan()
 
     def handle(self, *args, **options):
         create_what = options.get("create")
