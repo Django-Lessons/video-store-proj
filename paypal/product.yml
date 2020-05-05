@@ -1,0 +1,5 @@
+---
+id: "video-store-demo"
+name: "Video Store"
+description: "Demo Product for Django Lessons"
+type: "SERVICE"
