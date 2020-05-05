@@ -72,8 +72,10 @@ class Command(BaseCommand):
 
     def create_plan(self):
         with open(PLAN_CONF_PATH, "r") as f:
-            conf = yaml.safe_load(f)
-            logger.debug(conf)
+            data = yaml.safe_load(f)
+            logger.debug(data)
+            ret = myapi.post("v1/billing/plans", data)
+            logger.debug(ret)
 
     def list_product(self):
         ret = myapi.get("v1/catalogs/products")

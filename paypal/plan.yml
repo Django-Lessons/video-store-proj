@@ -1,0 +1,15 @@
+---
+product_id: video-store-demo
+name: "Montly Plan"
+description: "Montly subscription"
+billing_cycles:
+  frequency:
+    interval_unit: "MONTH"
+    interval_count: 1
+  tenure_type: "REGULAR"
+  sequence: 1
+  total_cycles: 0
+  pricing_scheme:
+    fixed_price":
+      value: "19.99"
+      currency_code": "USD"
