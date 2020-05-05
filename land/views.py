@@ -1,4 +1,5 @@
 import stripe
+import json
 import logging
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -8,11 +9,50 @@ from django.http import (
     HttpResponse
 )
 from django.conf import settings
-from land.payments import (VideosPlan, set_paid_until)
+from land.payments import (
+    VideosPlan,
+    set_paid_until,
+    paypal_set_paid_until
+)
 from land.models import Video
+from paypalrestsdk.notifications import WebhookEvent
 
 API_KEY = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
+
+
+@require_POST
+@csrf_exempt
+def paypal_webhooks(request):
+    logger.debug("=======================")
+    logger.debug(request.body)
+    logger.debug("=======================")
+    logger.debug(request.headers)
+    transmission_id = request.headers['Paypal-Transmission-Id']
+    timestamp = request.headers['Paypal-Transmission-Time']
+    webhook_id = settings.PAYPAL_WEBHOOK_ID
+    event_body = request.body.decode('utf-8')
+    cert_url = request.headers['Paypal-Cert-Url']
+    auth_algo = request.headers['Paypal-Auth-Algo']
+    actual_signature = request.headers['Paypal-Transmission-Sig']
+
+    response = WebhookEvent.verify(
+        transmission_id,
+        timestamp,
+        webhook_id,
+        event_body,
+        cert_url,
+        actual_signature,
+        auth_algo
+    )
+    logger.debug("=======================")
+    logger.debug(response)
+    if response:
+        obj = json.loads(request.body)
+        if obj.get('event_type') == 'PAYMENT.SALE.COMPLETED':
+            paypal_set_paid_until(obj.get('resource'))
+
+    return HttpResponse(status=200)
 
 
 @require_POST

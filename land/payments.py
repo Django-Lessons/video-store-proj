@@ -49,6 +49,13 @@ class VideosPlan:
         return self.plan.amount
 
 
+def paypal_set_paid_until(obj):
+    logger.debug(f"AMOUNT IS = {obj['amount']['total']}")
+    if amount == "19.99":
+        # hey, but how do I associat it to an user?
+        pass
+
+
 def set_paid_until(charge):
     logger.info(f"set_paid_until with {charge}")
 
