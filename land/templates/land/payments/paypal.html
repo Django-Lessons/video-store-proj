@@ -7,7 +7,7 @@
 <script src="https://www.paypal.com/sdk/js?client-id=AW3ynjt6FMF2sJ6Km8ahZlF9UqDfMwmxcf1e7y_U0VNNfZPN_y077v3JRsEmOh6dDZ2zOIVNjJ4XXpQQ&vault=true"></script>
 <script src="{% static 'land/js/paypal.js' %}"></script>
 <script>
-  _paypal('{{STRIPE_PUBLISHABLE_KEY}}', '{{customer_email}}');
+  _paypal('{{customer_email}}');
 </script>
 {% endblock extra_js %}
 

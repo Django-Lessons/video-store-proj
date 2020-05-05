@@ -156,7 +156,9 @@ def payment_method(request):
 
         return render(request, 'land/payments/card.html', context)
 
-    return render(request, 'land/payments/paypal.html')
+    context['customer_email'] = request.user.email
+
+    return render(request, 'land/payments/paypal.html', context)
 
 
 @login_required
