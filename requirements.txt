@@ -2,3 +2,4 @@ django
 django-extensions
 pyyaml
 requests
+paypalrestsdk

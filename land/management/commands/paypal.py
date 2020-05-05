@@ -1,9 +1,26 @@
 import yaml
+import requests
+import paypalrestsdk
 import os
 import logging
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
 logger = logging.getLogger(__name__)
+
+
+def mode():
+    if settings.DEBUG:
+        return "sandbox"
+
+    return "live"
+
+
+myapi = paypalrestsdk.Api({
+    "mode": mode(),  # noqa
+    "client_id": settings.PAYPAL_CLIENT_ID,
+    "client_secret": settings.PAYPAL_CLIENT_SECRET
+})
 
 
 PRODUCT = "product"
@@ -25,6 +42,13 @@ class Command(BaseCommand):
     Manages Paypal Plans
 """
 
+    @property
+    def headers(self):
+        return {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {settings.PAYPAL_ACCESS_TOKEN}"
+        }
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--create",
@@ -41,8 +65,10 @@ class Command(BaseCommand):
 
     def create_product(self):
         with open(PRODUCT_CONF_PATH, "r") as f:
-            conf = yaml.safe_load(f)
-            logger.debug(conf)
+            data = yaml.safe_load(f)
+            logger.debug(data)
+            ret = myapi.post("v1/catalogs/products", data)
+            logger.debug(ret)
 
     def create_plan(self):
         with open(PLAN_CONF_PATH, "r") as f:
@@ -50,7 +76,8 @@ class Command(BaseCommand):
             logger.debug(conf)
 
     def list_product(self):
-        pass
+        ret = myapi.get("v1/catalogs/products")
+        logger.debug(ret)
 
     def list_plan(self):
         pass
