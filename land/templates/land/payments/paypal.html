@@ -1,0 +1,26 @@
+{% extends 'land/base.html' %}
+{% load static %}
+
+{% block right_sidebar %} {% endblock %}
+
+{% block extra_js %}
+<script src="https://www.paypal.com/sdk/js?client-id=SB_CLIENT_ID&vault=true"></script>
+
+<script src="{% static 'land/js/paypal.js' %}"></script>
+<script>
+  _paypal('{{STRIPE_PUBLISHABLE_KEY}}', '{{customer_email}}');
+</script>
+{% endblock extra_js %}
+
+{% block extra_css %}
+{% endblock extra_css %}
+
+{% block central_content %}
+    <div class="row py-3">
+        <div class="col-lg-12 col-md-12">
+           <div class="container">
+              <div id="paypal-button-container"></div>
+           </div>
+        </div>
+    </div>  
+{% endblock %}
