@@ -116,6 +116,8 @@ def payment_method(request):
 
         return render(request, 'land/payments/card.html', context)
 
+    return render(request, 'land/payments/paypal.html')
+
 
 @login_required
 def profile(request):
