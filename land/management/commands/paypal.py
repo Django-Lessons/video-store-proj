@@ -82,7 +82,8 @@ class Command(BaseCommand):
         logger.debug(ret)
 
     def list_plan(self):
-        pass
+        ret = myapi.get("v1/billing/plans")
+        logger.debug(ret)
 
     def create(self, what):
         if what == PRODUCT:
