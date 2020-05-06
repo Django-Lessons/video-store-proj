@@ -89,13 +89,26 @@ def get_redirect_for(ret, what):
 
 def set_paid_until(obj, from_what):
 
-    if from_what == 'subscription':
+    if from_what == SUBSCRIPTION:
         billing_agreement_id = obj['billing_agreement_id']
         ret = myapi.get(f"v1/billing/subscriptions/{billing_agreement_id}")
-        if obj['amount']['total'] == "19.99":
-            # hey, but how do I associat it to an user?
-            pass
 
-    if from_what == 'order':
-        pass
+        try:
+            user = User.objects.get(order_id=ret['id'])
+        except User.DoesNotExist:
+            logger.error(f"User with order id={ret['id']} not found.")
+            return False
 
+        logger.debug(f"SUBSCRIPTION {obj} for user {user.email}")
+
+    if from_what == ORDER:
+        ret = get_redirect_for(obj['links'], 'self')
+        try:
+            user = User.objects.get(order_id=ret['id'])
+        except User.DoesNotExist:
+            logger.error(f"User with order id={ret['id']} not found.")
+            return False
+
+        logger.debug(f"ORDER {obj} for user {user.email}")
+
+    return True

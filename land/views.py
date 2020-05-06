@@ -184,6 +184,10 @@ def payment_method(request):
     else:
         ret = paypal.place_order()
         if ret['status'] == 'CREATED':
+            user = request.user
+            logger.debug(f"ORDER ID SAVED {ret}")
+            user.order_id = ret['id']
+            user.save()
             redirect_url = paypal.get_redirect_for(ret, 'approve')
             return HttpResponseRedirect(redirect_url)
 
