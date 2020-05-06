@@ -81,7 +81,7 @@ def create_subscription():
     return myapi.post("v1/billing/subscriptions", data)
 
 
-def get_redirect_for(ret, what):
+def get_url_from(ret, what):
     for link in ret['links']:
         if link['rel'] == what:
             return link['href']
@@ -102,7 +102,7 @@ def set_paid_until(obj, from_what):
         logger.debug(f"SUBSCRIPTION {obj} for user {user.email}")
 
     if from_what == ORDER:
-        ret = get_redirect_for(obj['links'], 'self')
+        ret = get_url_from(obj['links'], 'self')
         try:
             user = User.objects.get(order_id=ret['id'])
         except User.DoesNotExist:

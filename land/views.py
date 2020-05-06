@@ -179,8 +179,8 @@ def payment_method(request):
                 logger.debug(
                     myapi.get(f"v1/billing/subscriptions/{ret['id']}")
                 )
-                # is this correct HOA link index?
-                return HttpResponseRedirect(ret['links'][0]['href'])
+                redirect_url = paypal.get_url_from(ret['links'], 'approve')
+                return HttpResponseRedirect(redirect_url)
     else:
         ret = paypal.place_order()
         if ret['status'] == 'CREATED':
@@ -188,7 +188,7 @@ def payment_method(request):
             logger.debug(f"ORDER ID SAVED {ret}")
             user.order_id = ret['id']
             user.save()
-            redirect_url = paypal.get_redirect_for(ret, 'approve')
+            redirect_url = paypal.get_url_from(ret, 'approve')
             return HttpResponseRedirect(redirect_url)
 
     return render(request, 'land/payments/paypal.html')
