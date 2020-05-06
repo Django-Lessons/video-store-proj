@@ -4,7 +4,13 @@ import os
 import logging
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from land.payments import mode
+from land.payments.paypal import (
+    mode,
+    PRODUCT_CONF_PATH,
+    PLAN_CONF_PATH,
+    PRODUCT,
+    PLAN
+)
 
 logger = logging.getLogger(__name__)
 
@@ -18,16 +24,6 @@ myapi = paypalrestsdk.Api({
 
 PRODUCT = "product"
 PLAN = "plan"
-
-BASE_DIR = os.path.join(
-    "..",  # proj
-    "..",  # land
-    "..",  # management
-    os.path.dirname(__file__)  # commands
-)
-
-PRODUCT_CONF_PATH = os.path.join("paypal", "product.yml")
-PLAN_CONF_PATH = os.path.join("paypal", "plan.yml")
 
 class Command(BaseCommand):
 

@@ -10,13 +10,17 @@ from django.http import (
     HttpResponseRedirect
 )
 from django.conf import settings
-from land.payments import (
+
+from land.models import Video
+from land.payments.stripe import (
     VideosPlan,
-    set_paid_until,
-    paypal_set_paid_until,
+)
+from land.payments.stripe import set_paid_until as stripe_set_paid_until
+from land.payments.paypal import set_paid_until as paypal_set_paid_until
+from land.payments.paypal import (
     mode
 )
-from land.models import Video
+
 import paypalrestsdk
 from paypalrestsdk.notifications import WebhookEvent
 
@@ -84,7 +88,7 @@ def stripe_webhooks(request):
     # Handle the event
     if event.type == 'charge.succeeded':
         # object has  payment_intent attr
-        set_paid_until(event.data.object)
+        stripe_set_paid_until(event.data.object)
 
     return HttpResponse(status=200)
 

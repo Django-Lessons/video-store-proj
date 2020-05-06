@@ -18,6 +18,9 @@ PRODUCT_CONF_PATH = os.path.join("paypal", "product.yml")
 PLAN_CONF_PATH = os.path.join("paypal", "plan.yml")
 ORDER_CONF_PATH = os.path.join("paypal", "order.yml")
 
+PRODUCT = "product"
+PLAN = "plan"
+
 
 def mode():
     if settings.DEBUG:

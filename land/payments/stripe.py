@@ -1,4 +1,3 @@
-import paypalrestsdk
 import logging
 import stripe
 from land.models import User
