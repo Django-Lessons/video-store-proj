@@ -4,9 +4,10 @@ import logging
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import (
-    HttpResponse
+    HttpResponse,
+    HttpResponseRedirect
 )
 from django.conf import settings
 from land.payments import (
@@ -33,10 +34,6 @@ myapi = paypalrestsdk.Api({
 @require_POST
 @csrf_exempt
 def paypal_webhooks(request):
-    logger.debug("=======================")
-    logger.debug(request.body)
-    logger.debug("=======================")
-    logger.debug(request.headers)
     transmission_id = request.headers['Paypal-Transmission-Id']
     timestamp = request.headers['Paypal-Transmission-Time']
     webhook_id = settings.PAYPAL_WEBHOOK_ID
@@ -54,8 +51,6 @@ def paypal_webhooks(request):
         actual_signature,
         auth_algo
     )
-    logger.debug("=======================")
-    logger.debug(response)
     if response:
         obj = json.loads(request.body)
         if obj.get('event_type') == 'PAYMENT.SALE.COMPLETED':
@@ -134,12 +129,11 @@ def upgrade(request):
     return render(request, 'land/payments/upgrade.html')
 
 
-@require_POST
 @login_required
 def payment_method(request):
     stripe.api_key = API_KEY
     plan = request.POST.get('plan', 'm')
-    automatic = request.POST.get('automatic', 'on')
+    automatic = request.POST.get('automatic', 'off')
     payment_method = request.POST.get('payment_method', 'card')
     context = {}
 
@@ -167,11 +161,43 @@ def payment_method(request):
 
     context['customer_email'] = request.user.email
 
-    data = {'plan_id': settings.PAYPAL_PLAN_MONTLY_ID}
-    ret = myapi.post("v1/billing/subscriptions", data)
-    import pdb; pdb.set_trace()
+    if automatic == 'on':
+        data = {
+            'plan_id': settings.PAYPAL_PLAN_MONTHLY_ID,
+            'subscriber': {
+                'email_address': request.user.email
+            },
+        }
+        ret = myapi.post("v1/billing/subscriptions", data)
+        if ret:
+            if ret['status'] == 'APPROVAL_PENDING':
+                logger.debug("==================Subscription Info===============")
+                logger.debug(myapi.get(f"v1/billing/subscriptions/{ret['id']}"))
+                # is this correct HOA link index?
+                return HttpResponseRedirect(ret['links'][0]['href'])
+    else:
+        order = {
+            "intent": "CAPTURE",
+            "purchase_units": [
+                {
+                    "amount": {
+                        "currency_code": "USD",
+                        "value": "19.95"
+                    },
+                }
+            ],
+            "application_context": {
+                "shipping_preference": "NO_SHIPPING",
+                "brand_name": "Video Store Demo"
+            }
+        }
+        ret = myapi.post("v2/checkout/orders", order)
+        if ret['status'] == 'CREATED':
+            for link in ret['links']:
+                if link['rel'] == 'approve':
+                    return HttpResponseRedirect(link['href'])
 
-    return render(request, 'land/payments/paypal.html', context)
+    return render(request, 'land/payments/paypal.html')
 
 
 @login_required
