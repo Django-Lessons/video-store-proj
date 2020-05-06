@@ -16,7 +16,6 @@ from land.payments.stripe import (
     VideosPlan,
 )
 from land.payments.stripe import set_paid_until as stripe_set_paid_until
-from land.payments.paypal import set_paid_until as paypal_set_paid_until
 from land.payments import paypal
 
 import paypalrestsdk
@@ -55,8 +54,15 @@ def paypal_webhooks(request):
     )
     if response:
         obj = json.loads(request.body)
-        if obj.get('event_type') == 'PAYMENT.SALE.COMPLETED':
-            paypal_set_paid_until(obj.get('resource'))
+
+        event_type = obj.get('event_type')
+        resource = obj.get('resource')
+
+        if event_type == 'PAYMENT.SALE.COMPLETED':
+            paypal.set_paid_until(resource, paypal.SUBSCRIPTION)
+
+        if event_type == 'CHECKOUT.ORDER.APPROVED':
+            paypal.set_paid_until(resource, paypal.ORDER)
 
     return HttpResponse(status=200)
 

@@ -21,6 +21,9 @@ ORDER_CONF_PATH = os.path.join("paypal", "order.yml")
 PRODUCT = "product"
 PLAN = "plan"
 
+SUBSCRIPTION = 'subscription'
+ORDER = 'order'
+
 
 def mode():
     if settings.DEBUG:
@@ -84,12 +87,15 @@ def get_redirect_for(ret, what):
             return link['href']
 
 
-def set_paid_until(obj):
-    logger.debug(f"OBJ = {obj}")
-    billing_agreement_id = obj['billing_agreement_id']
-    ret = myapi.get(f"v1/billing/subscriptions/{billing_agreement_id}")
-    logger.debug("===================== Subsciption details =================")
-    logger.debug(ret)
-    if obj['amount']['total'] == "19.99":
-        # hey, but how do I associat it to an user?
+def set_paid_until(obj, from_what):
+
+    if from_what == 'subscription':
+        billing_agreement_id = obj['billing_agreement_id']
+        ret = myapi.get(f"v1/billing/subscriptions/{billing_agreement_id}")
+        if obj['amount']['total'] == "19.99":
+            # hey, but how do I associat it to an user?
+            pass
+
+    if from_what == 'order':
         pass
+
