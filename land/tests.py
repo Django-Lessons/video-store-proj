@@ -1,6 +1,7 @@
 from datetime import date, datetime, timedelta
 from django.test import TestCase
 from land.models import User
+from land.payments.paypal import plus_days
 
 
 class PaymentUnitTest(TestCase):
@@ -49,6 +50,27 @@ class PaymentUnitTest(TestCase):
 
         self.user.set_paid_until(
             '1212344545'
+        )
+
+    def test_plus_31_days(self):
+        current_date = datetime(2020, 1, 1)
+        _15days = timedelta(days=15)
+
+        self.user.set_paid_until(
+            current_date - _15days
+        )
+        self.assertFalse(
+            self.user.has_paid(
+                current_date=current_date
+            )
+        )
+        self.user.set_paid_until(
+            plus_days(count=31)
+        )
+        self.assertTrue(
+            self.user.has_paid(
+                current_date=current_date
+            )
         )
 
 

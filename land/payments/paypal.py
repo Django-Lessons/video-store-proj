@@ -2,6 +2,7 @@ import os
 import yaml
 import paypalrestsdk
 import logging
+from datetime import datetime, timedelta
 from land.models import User
 
 from django.conf import settings
@@ -23,6 +24,11 @@ PLAN = "plan"
 
 SUBSCRIPTION = 'subscription'
 ORDER = 'order'
+
+
+def plus_days(count):
+    _date = datetime.now()
+    return _date + timedelta(days=count)
 
 
 def mode():
@@ -81,8 +87,8 @@ def create_subscription():
     return myapi.post("v1/billing/subscriptions", data)
 
 
-def get_url_from(ret, what):
-    for link in ret['links']:
+def get_url_from(iterator, what):
+    for link in iterator:
         if link['rel'] == what:
             return link['href']
 
@@ -94,17 +100,20 @@ def set_paid_until(obj, from_what):
         ret = myapi.get(f"v1/billing/subscriptions/{billing_agreement_id}")
 
         try:
-            user = User.objects.get(order_id=ret['id'])
+            user = User.objects.get(paypal_subscription_id=ret['id'])
         except User.DoesNotExist:
             logger.error(f"User with order id={ret['id']} not found.")
             return False
 
         logger.debug(f"SUBSCRIPTION {obj} for user {user.email}")
+        if obj['amount']['total'] == '19.99':
+            user.set_paid_until(plus_days(count=31))
 
     if from_what == ORDER:
-        ret = get_url_from(obj['links'], 'self')
+        url = get_url_from(obj['links'], 'self')
+        ret = myapi.get(url)
         try:
-            user = User.objects.get(order_id=ret['id'])
+            user = User.objects.get(paypal_order_id=ret['id'])
         except User.DoesNotExist:
             logger.error(f"User with order id={ret['id']} not found.")
             return False
