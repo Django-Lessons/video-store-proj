@@ -17,9 +17,7 @@ from land.payments.stripe import (
 )
 from land.payments.stripe import set_paid_until as stripe_set_paid_until
 from land.payments.paypal import set_paid_until as paypal_set_paid_until
-from land.payments.paypal import (
-    mode
-)
+from land.payments import paypal
 
 import paypalrestsdk
 from paypalrestsdk.notifications import WebhookEvent
@@ -29,7 +27,7 @@ API_KEY = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
 
 myapi = paypalrestsdk.Api({
-    "mode": mode(),  # noqa
+    "mode": paypal.mode(),  # noqa
     "client_id": settings.PAYPAL_CLIENT_ID,
     "client_secret": settings.PAYPAL_CLIENT_SECRET
 })
@@ -166,40 +164,22 @@ def payment_method(request):
     context['customer_email'] = request.user.email
 
     if automatic == 'on':
-        data = {
-            'plan_id': settings.PAYPAL_PLAN_MONTHLY_ID,
-            'subscriber': {
-                'email_address': request.user.email
-            },
-        }
-        ret = myapi.post("v1/billing/subscriptions", data)
+        ret = paypal.create_subscription()
         if ret:
             if ret['status'] == 'APPROVAL_PENDING':
-                logger.debug("==================Subscription Info===============")
-                logger.debug(myapi.get(f"v1/billing/subscriptions/{ret['id']}"))
+                logger.debug(
+                    "==================Subscription Info==============="
+                )
+                logger.debug(
+                    myapi.get(f"v1/billing/subscriptions/{ret['id']}")
+                )
                 # is this correct HOA link index?
                 return HttpResponseRedirect(ret['links'][0]['href'])
     else:
-        order = {
-            "intent": "CAPTURE",
-            "purchase_units": [
-                {
-                    "amount": {
-                        "currency_code": "USD",
-                        "value": "19.95"
-                    },
-                }
-            ],
-            "application_context": {
-                "shipping_preference": "NO_SHIPPING",
-                "brand_name": "Video Store Demo"
-            }
-        }
-        ret = myapi.post("v2/checkout/orders", order)
+        ret = paypal.place_order()
         if ret['status'] == 'CREATED':
-            for link in ret['links']:
-                if link['rel'] == 'approve':
-                    return HttpResponseRedirect(link['href'])
+            redirect_url = paypal.get_redirect_for(ret, 'approve')
+            return HttpResponseRedirect(redirect_url)
 
     return render(request, 'land/payments/paypal.html')
 

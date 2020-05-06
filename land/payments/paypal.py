@@ -66,25 +66,22 @@ def get_order():
     return data
 
 
-def place_order(user):
-    # Perform one time payment, and save order id
-    # on the user model
-    order = {
-        "intent": "CAPTURE",
-        "purchase_units": [
-            {
-                "amount": {
-                    "currency_code": "USD",
-                    "value": "19.95"
-                },
-            }
-        ],
-        "application_context": {
-            "shipping_preference": "NO_SHIPPING",
-            "brand_name": "Video Store Demo"
-        }
+def create_order():
+    order = get_order()
+    return myapi.post("v2/checkout/orders", order)
+
+
+def create_subscription():
+    data = {
+        'plan_id': settings.PAYPAL_PLAN_MONTHLY_ID,
     }
-    ret = myapi.post("v2/checkout/orders", order)
+    return myapi.post("v1/billing/subscriptions", data)
+
+
+def get_redirect_for(ret, what):
+    for link in ret['links']:
+        if link['rel'] == what:
+            return link['href']
 
 
 def set_paid_until(obj):
