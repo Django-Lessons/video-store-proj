@@ -1,3 +1,4 @@
+import paypalrestsdk
 import logging
 import stripe
 from land.models import User
@@ -9,6 +10,20 @@ ANNUAL = 'a'
 
 API_KEY = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
+
+
+def mode():
+    if settings.DEBUG:
+        return "sandbox"
+
+    return "live"
+
+
+myapi = paypalrestsdk.Api({
+    "mode": mode(),  # noqa
+    "client_id": settings.PAYPAL_CLIENT_ID,
+    "client_secret": settings.PAYPAL_CLIENT_SECRET
+})
 
 
 class VideosMonthPlan:
@@ -50,8 +65,12 @@ class VideosPlan:
 
 
 def paypal_set_paid_until(obj):
-    logger.debug(f"AMOUNT IS = {obj['amount']['total']}")
-    if amount == "19.99":
+    logger.debug(f"OBJ = {obj}")
+    billing_agreement_id = obj['billing_agreement_id']
+    ret = myapi.get(f"v1/billing/subscriptions/{billing_agreement_id}")
+    logger.debug("===================== Subsciption details =================")
+    logger.debug(ret)
+    if obj['amount']['total'] == "19.99":
         # hey, but how do I associat it to an user?
         pass
 

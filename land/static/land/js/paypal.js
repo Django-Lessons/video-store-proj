@@ -10,7 +10,7 @@ function _paypal(email) {
             });
           },
           onApprove: function(data, actions) {
-            alert('You have successfully created subscription ' + data.subscriptionID);
+            console.log('You have successfully created subscription ' + data);
           }
         }).render('#paypal-button-container');
     }); // DOMContentLoaded

@@ -15,10 +15,18 @@ from land.payments import (
     paypal_set_paid_until
 )
 from land.models import Video
+import paypalrestsdk
 from paypalrestsdk.notifications import WebhookEvent
+
 
 API_KEY = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
+
+myapi = paypalrestsdk.Api({
+    "mode": mode(),  # noqa
+    "client_id": settings.PAYPAL_CLIENT_ID,
+    "client_secret": settings.PAYPAL_CLIENT_SECRET
+})
 
 
 @require_POST
@@ -157,6 +165,10 @@ def payment_method(request):
         return render(request, 'land/payments/card.html', context)
 
     context['customer_email'] = request.user.email
+
+    data = {'plan_id': }
+    ret = myapi.post("v1/billing/subscriptions", data)
+    import pdb; pdb.set_trace()
 
     return render(request, 'land/payments/paypal.html', context)
 
