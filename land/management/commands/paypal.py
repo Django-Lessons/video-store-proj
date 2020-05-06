@@ -22,9 +22,6 @@ myapi = paypalrestsdk.Api({
 })
 
 
-PRODUCT = "product"
-PLAN = "plan"
-
 class Command(BaseCommand):
 
     help = """

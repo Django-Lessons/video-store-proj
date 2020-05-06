@@ -11,9 +11,17 @@ class User(AbstractUser):
     )
 
     # store one time payment reference to this user
-    paypal_order_id = models.CharField(max_length=64)
+    paypal_order_id = models.CharField(
+        max_length=64,
+        blank=True,
+        null=True
+    )
     # store subscription reference to this user
-    paypal_subscription_id = models.CharField(max_length=64)
+    paypal_subscription_id = models.CharField(
+        max_length=64,
+        blank=True,
+        null=True
+    )
 
     def set_paid_until(self, date_or_timestamp):
         if isinstance(date_or_timestamp, int):
