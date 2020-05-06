@@ -1,19 +1,12 @@
 import yaml
-import requests
 import paypalrestsdk
 import os
 import logging
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from land.payments import mode
 
 logger = logging.getLogger(__name__)
-
-
-def mode():
-    if settings.DEBUG:
-        return "sandbox"
-
-    return "live"
 
 
 myapi = paypalrestsdk.Api({

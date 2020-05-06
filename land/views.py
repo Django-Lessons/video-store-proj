@@ -12,7 +12,8 @@ from django.conf import settings
 from land.payments import (
     VideosPlan,
     set_paid_until,
-    paypal_set_paid_until
+    paypal_set_paid_until,
+    mode
 )
 from land.models import Video
 import paypalrestsdk
@@ -166,7 +167,7 @@ def payment_method(request):
 
     context['customer_email'] = request.user.email
 
-    data = {'plan_id': }
+    data = {'plan_id': settings.PAYPAL_PLAN_MONTLY_ID}
     ret = myapi.post("v1/billing/subscriptions", data)
     import pdb; pdb.set_trace()
 
