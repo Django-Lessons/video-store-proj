@@ -1,0 +1,10 @@
+---
+intent: CAPTURE
+purchase_units: 
+  - amount:
+      currency_code: USD
+      value: "19.95"
+
+application_context: 
+  shipping_preference: NO_SHIPPING
+  brand_name: "Video Store Demo"
