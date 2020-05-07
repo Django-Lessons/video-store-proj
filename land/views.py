@@ -1,18 +1,27 @@
 import stripe
+import paypalrestsdk
 import logging
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.shortcuts import render
 from django.http import (
-    HttpResponse
+    HttpResponse,
+    HttpResponseRedirect
 )
 from django.conf import settings
 from land.payments.stripe import (VideosPlan, set_paid_until)
+from land.payments import paypal
 from land.models import Video
 
 API_KEY = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
+
+myapi = paypalrestsdk.Api({
+    "mode": paypal.mode(),  # noqa
+    "client_id": settings.PAYPAL_CLIENT_ID,
+    "client_secret": settings.PAYPAL_CLIENT_SECRET
+})
 
 
 @require_POST
@@ -115,6 +124,18 @@ def payment_method(request):
         context['stripe_plan_id'] = plan_inst.stripe_plan_id
 
         return render(request, 'land/payments/card.html', context)
+    elif payment_method == 'paypal':
+        if automatic == 'on':
+            data = {
+                'plan_id': settings.PAYPAL_PLAN_MONTHLY_ID,
+            }
+            ret = myapi.post("v1/billing/subscriptions", data)
+            if ret['status'] == 'APPROVAL_PENDING':
+                user = request.user
+                user.paypal_subscription_id = ret['id']
+                user.save()
+                redirect_url = paypal.get_url_from(ret['links'], 'approve')
+                return HttpResponseRedirect(redirect_url)
 
 
 @login_required

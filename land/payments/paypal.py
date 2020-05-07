@@ -6,3 +6,10 @@ def mode():
         return "sandbox"
 
     return "live"
+
+
+def get_url_from(iterator, what):
+    for link in iterator:
+        if link['rel'] == what:
+            return link['href']
+
