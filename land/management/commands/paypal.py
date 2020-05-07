@@ -1,10 +1,18 @@
+import paypalrestsdk
 import logging
 from django.core.management.base import BaseCommand
+from django.conf import settings
 
 PRODUCT = "product"
 PLAN = "plan"
 
 logger = logging.getLogger(__name__)
+
+myapi = paypalrestsdk.Api({
+    "mode": mode(),  # noqa "sandbox" or "live"
+    "client_id": settings.PAYPAL_CLIENT_ID,
+    "client_secret": settings.PAYPAL_CLIENT_SECRET
+})
 
 
 class Command(BaseCommand):
