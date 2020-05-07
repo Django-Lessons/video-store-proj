@@ -1,10 +1,29 @@
+import os
+import yaml
 import paypalrestsdk
 import logging
+
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
+from land.payments.paypal import mode
+
 PRODUCT = "product"
 PLAN = "plan"
+
+BASE_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),  # commands
+    "../",  # management
+    "../",  # land
+    "../",  # videoproj
+)
+
+PRODUCT_CONF_PATH = os.path.join(
+    BASE_DIR, "paypal", "product.yml"
+)
+PLAN_CONF_PATH = os.path.join(
+    BASE_DIR, "paypal", "plan.yml"
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,16 +55,24 @@ class Command(BaseCommand):
         )
 
     def create_product(self):
-        pass
+        with open(PRODUCT_CONF_PATH, "r") as f:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+            ret = myapi.post("v1/catalogs/products", data)
+            logger.debug(ret)
 
     def create_plan(self):
-        pass
+        with open(PLAN_CONF_PATH, "r") as f:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+            ret = myapi.post("v1/billing/plans", data)
+            logger.debug(ret)
 
     def list_product(self):
-        pass
+        ret = myapi.get("v1/catalogs/products")
+        logger.debug(ret)
 
     def list_plan(self):
-        pass
+        ret = myapi.get("v1/billing/plans")
+        logger.debug(ret)
 
     def create(self, what):
         if what == PRODUCT:

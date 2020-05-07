@@ -8,7 +8,7 @@ from django.http import (
     HttpResponse
 )
 from django.conf import settings
-from land.payments import (VideosPlan, set_paid_until)
+from land.payments.stripe import (VideosPlan, set_paid_until)
 from land.models import Video
 
 API_KEY = settings.STRIPE_SECRET_KEY
