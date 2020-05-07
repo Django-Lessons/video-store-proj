@@ -26,6 +26,39 @@ myapi = paypalrestsdk.Api({
 
 @require_POST
 @csrf_exempt
+def paypal_webhooks(request):
+    transmission_id = request.headers['Paypal-Transmission-Id']
+    timestamp = request.headers['Paypal-Transmission-Time']
+    webhook_id = settings.PAYPAL_WEBHOOK_ID
+    event_body = request.body.decode('utf-8')
+    cert_url = request.headers['Paypal-Cert-Url']
+    auth_algo = request.headers['Paypal-Auth-Algo']
+    actual_signature = request.headers['Paypal-Transmission-Sig']
+
+    response = WebhookEvent.verify(
+        transmission_id,
+        timestamp,
+        webhook_id,
+        event_body,
+        cert_url,
+        actual_signature,
+        auth_algo
+    )
+
+    if response:
+        obj = json.loads(request.body)
+
+        event_type = obj.get('event_type')
+        resource = obj.get('resource')
+
+        if event_type == 'PAYMENT.SALE.COMPLETED':
+            paypal.set_paid_until(resource, paypal.SUBSCRIPTION)
+
+    return HttpResponse(status=200)
+
+
+@require_POST
+@csrf_exempt
 def stripe_webhooks(request):
 
     payload = request.body
