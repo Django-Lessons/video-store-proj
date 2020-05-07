@@ -1,5 +1,4 @@
 import os
-import yaml
 import paypalrestsdk
 import logging
 from datetime import datetime, timedelta
@@ -26,21 +25,18 @@ SUBSCRIPTION = 'subscription'
 ORDER = 'order'
 
 
-myapi = paypalrestsdk.Api({
-    "mode": mode(),  # noqa
-    "client_id": settings.PAYPAL_CLIENT_ID,
-    "client_secret": settings.PAYPAL_CLIENT_SECRET
-})
-
-
-from django.conf import settings
-
-
 def mode():
     if settings.DEBUG:
         return "sandbox"
 
     return "live"
+
+
+myapi = paypalrestsdk.Api({
+    "mode": mode(),  # noqa
+    "client_id": settings.PAYPAL_CLIENT_ID,
+    "client_secret": settings.PAYPAL_CLIENT_SECRET
+})
 
 
 def get_url_from(iterator, what):
